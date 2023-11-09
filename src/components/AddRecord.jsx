@@ -120,11 +120,9 @@ const AddRecord = ({ showModal, setShowModal, setReload }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const record_data_id = "RD" + Math.floor(Math.random() * 100000);
         const formData = new FormData();
-        formData.append(
-            "record_data_id",
-            "RD" + Math.floor(Math.random() * 100000)
-        );
+        formData.append("record_data_id", record_data_id);
         formData.append("record_date", new Date().toISOString().slice(0, 10));
         formData.append("record_file", recordFile);
         formData.append("record_status", "For Approval");
@@ -177,6 +175,25 @@ const AddRecord = ({ showModal, setShowModal, setReload }) => {
                         console.log(data);
                     }
                 }
+
+                // app.post("/water_consumption", async (req, res) => {
+
+                // consumptions.forEach(async (consumption) => {
+                //     consumption["record_data_id"] = record_data_id;
+
+                //     const response3 = await fetch(
+                //         //localhost:5000/water_consumption",
+                //         {
+                //             method: "POST",
+                //             headers: {
+                //                 "Content-Type": "application/json",
+                //             },
+                //             body: JSON.stringify(consumption),
+                //         }
+                //     );
+                //     const data = await response3.json();
+                //     console.log(data);
+                // });
             }
         });
         setReload(true);
@@ -311,27 +328,106 @@ const AddRecord = ({ showModal, setShowModal, setReload }) => {
                                 />
                             </div>
                             {sdgID === "SDG6" && (
-                                <h1>Yearly Water Consumption</h1>
-                                // consumptions.map((consumption, index) => {
-                                //     <div className="flex flex-col" key={index}>
-                                //         <label
-                                //             for={consumption.month}
-                                //             className="text-sm font-semibold text-gray-600"
-                                //         ></label>
-                                //         <input
-                                //             id={consumption.month}
-                                //             type="year"
-                                //             name="year"
-                                //             placeholder="Year"
-                                //             value={con}
-                                //             className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50"
-                                //             onChange={(e) =>
-                                //                 setYear(e.target.value);
-                                //                 console.log()
-                                //             } // e.target.files[0] is the file
-                                //         />
-                                //     </div>;
-                                // )}
+                                <>
+                                    <h1>Yearly Water Consumption</h1>
+
+                                    {consumptions.map((entry) => (
+                                        <div key={entry.month}>
+                                            <h2>{entry.month}</h2>
+                                            <label>
+                                                Deep Well:
+                                                <input
+                                                    type="number"
+                                                    value={entry.deepWell}
+                                                    onChange={(e) => {
+                                                        const value = Number(
+                                                            e.target.value
+                                                        );
+                                                        setConsumptions(
+                                                            (prev) =>
+                                                                prev.map(
+                                                                    (item) => {
+                                                                        if (
+                                                                            item.month ===
+                                                                            entry.month
+                                                                        ) {
+                                                                            return {
+                                                                                ...item,
+                                                                                deepWell:
+                                                                                    value,
+                                                                            };
+                                                                        }
+                                                                        return item;
+                                                                    }
+                                                                )
+                                                        );
+                                                    }}
+                                                />
+                                            </label>
+                                            <br />
+                                            <label>
+                                                Mains:
+                                                <input
+                                                    type="number"
+                                                    value={entry.mains}
+                                                    onChange={(e) => {
+                                                        const value = Number(
+                                                            e.target.value
+                                                        );
+                                                        setConsumptions(
+                                                            (prev) =>
+                                                                prev.map(
+                                                                    (item) => {
+                                                                        if (
+                                                                            item.month ===
+                                                                            entry.month
+                                                                        ) {
+                                                                            return {
+                                                                                ...item,
+                                                                                mains: value,
+                                                                            };
+                                                                        }
+                                                                        return item;
+                                                                    }
+                                                                )
+                                                        );
+                                                    }}
+                                                />
+                                            </label>
+                                            <br />
+                                            <label>
+                                                Drinking Water:
+                                                <input
+                                                    type="number"
+                                                    value={entry.drinkingWater}
+                                                    onChange={(e) => {
+                                                        const value = Number(
+                                                            e.target.value
+                                                        );
+                                                        setConsumptions(
+                                                            (prev) =>
+                                                                prev.map(
+                                                                    (item) => {
+                                                                        if (
+                                                                            item.month ===
+                                                                            entry.month
+                                                                        ) {
+                                                                            return {
+                                                                                ...item,
+                                                                                drinkingWater:
+                                                                                    value,
+                                                                            };
+                                                                        }
+                                                                        return item;
+                                                                    }
+                                                                )
+                                                        );
+                                                    }}
+                                                />
+                                            </label>
+                                        </div>
+                                    ))}
+                                </>
                             )}
                         </div>
 

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import DataTable from "react-data-table-component";
 import AddPopulation from "../components/AddPopulation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSquare, faSquarePlus } from "@fortawesome/free-solid-svg-icons";
 const Population = () => {
     const [ID, setID] = useState(localStorage.getItem("ID"));
     const [ROLE, setROLE] = useState(localStorage.getItem("ROLE"));
@@ -12,16 +14,7 @@ const Population = () => {
         }
     }, [ID]);
 
-    const [enrolled, setEnrolled] = useState([
-        {
-            enrolled_id: 1,
-            enrolled_school_year: "2022",
-            enrolled_year_level: "1st Year",
-            enrolled_gender: "Male",
-            enrollment_number: 100,
-            campus_id: 1,
-        },
-    ]);
+    const [enrolled, setEnrolled] = useState([]);
 
     const columns = [
         {
@@ -31,17 +24,17 @@ const Population = () => {
         },
         {
             name: "School Year",
-            selector: (row) => row.enrolled_school_year,
+            selector: (row) => row.enrollment_school_year,
             sortable: true,
         },
         {
             name: "Year Level",
-            selector: (row) => row.enrolled_year_level,
+            selector: (row) => row.enrollment_year_level,
             sortable: true,
         },
         {
             name: "Gender",
-            selector: (row) => row.enrolled_gender,
+            selector: (row) => row.enrollment_gender,
             sortable: true,
         },
         {
@@ -54,6 +47,18 @@ const Population = () => {
 
     const [showAddPopulation, setShowAddPopulation] = useState(false);
     const [reload, setReload] = useState(false);
+
+    useEffect(() => {
+        const getEnrolled = async () => {
+            const response = await fetch("http://localhost:5000/enrollment");
+            const data = await response.json();
+            setEnrolled(data);
+            setReload(false);
+        };
+        getEnrolled();
+        console.log(enrolled);
+    }, [reload]);
+
     return (
         <section className="population">
             <Sidebar />
@@ -63,6 +68,16 @@ const Population = () => {
                         <h3 className="text-3xl font-bold text-gray-700 title">
                             Population
                         </h3>
+                        <button
+                            className="btn bg-blue-500 text-white hover:bg-blue-600 px-3 py-2 rounded-lg"
+                            onClick={() => setShowAddPopulation(true)}
+                        >
+                            <FontAwesomeIcon
+                                icon={faSquarePlus}
+                                className="mr-2"
+                            />
+                            Add Population
+                        </button>
                     </div>
                     <hr className="my-5 border-gray-800 border-1" />
                     <DataTable

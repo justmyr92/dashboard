@@ -594,6 +594,34 @@ app.patch("/unit/update/:id", async (req, res) => {
     }
 });
 
+// Routes
+app.get("/water_consumption", async (req, res) => {
+    try {
+        const { rows } = await pool.query("SELECT * FROM water_consumption");
+        res.json(rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+app.post("/water_consumption", async (req, res) => {
+    const { month, deepWell, mains, drinkingWater } = req.body;
+    try {
+        const query = `
+        INSERT INTO water_consumption (month, deep_well, mains, drinking_water)
+        VALUES ($1, $2, $3, $4)
+        RETURNING *
+      `;
+        const values = [month, deepWell, mains, drinkingWater];
+        const { rows } = await pool.query(query, values);
+        res.json(rows[0]);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
 //get the campus_id of the sdo_officer by sdo_officer_id
 app.get("/campus_id/:id", async (req, res) => {
     try {
@@ -603,6 +631,51 @@ app.get("/campus_id/:id", async (req, res) => {
             [id]
         );
         res.json(campusID.rows[0]);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
+
+app.post("/add_enrollment", async (req, res) => {
+    try {
+        // Destructure the data from the request body
+        const {
+            enrolled_id,
+            enrolled_school_year,
+            enrolled_year_level,
+            enrolled_gender,
+            enrollment_number,
+            campus_id,
+        } = req.body;
+
+        // Use the data to insert a new enrollment into the database
+        const newEnrollment = await pool.query(
+            "INSERT INTO enrollment_table (enrollment_id, enrollment_school_year, enrollment_year_level, enrollment_gender, enrollment_number, campus_id) " +
+                "VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+            [
+                enrolled_id,
+                enrolled_school_year,
+                enrolled_year_level,
+                enrolled_gender,
+                enrollment_number,
+                campus_id,
+            ]
+        );
+
+        // Send the newly inserted enrollment data back as the response
+        res.json(newEnrollment.rows[0]); // Assuming you expect a single enrollment back
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Server Error");
+    }
+});
+
+app.get("/enrollment", async (req, res) => {
+    try {
+        const allEnrollment = await pool.query(
+            "SELECT * FROM enrollment_table"
+        );
+        res.json(allEnrollment.rows);
     } catch (err) {
         console.error(err.message);
     }
